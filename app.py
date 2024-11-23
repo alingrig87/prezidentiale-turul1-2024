@@ -1,8 +1,15 @@
 from flask import Flask, jsonify, send_from_directory
+from flask_cors import CORS  # Import Flask-CORS
 import os
 from predict import get_ro_votes, get_foreign_votes, run_predictor
 
 app = Flask(__name__)
+
+# Enable CORS for all routes
+CORS(app)
+
+# Alternatively, enable CORS for specific origins
+# CORS(app, resources={r"/*": {"origins": ["http://localhost:5500", "https://congenial-space-guide-xp7xq4446gg3pwr4-5500.app.github.dev"]}})
 
 @app.route('/')
 def home():
@@ -25,7 +32,7 @@ def predict():
             "votes_romania": votes_ro,
             "votes_foreign": votes_foreign,
             "valid_votes_percentage": valid_votes_perc,
-            "results": results,  # Object returned from run_predictor
+            "results": results,
             "image_url": "/results.png"
         }
 
@@ -35,6 +42,7 @@ def predict():
 
 @app.route('/results.png', methods=['GET'])
 def get_results_image():
+    # Serve the results.png file
     return app.send_static_file('results.png')
 
 if __name__ == '__main__':
