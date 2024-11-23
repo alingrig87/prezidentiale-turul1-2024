@@ -25,20 +25,27 @@ def predict():
         valid_votes_perc = 0.96
 
         # Get prediction results
-        results = run_predictor(votes_ro * valid_votes_perc, votes_foreign * valid_votes_perc)
+        overall_results, results_romania, results_diaspora = run_predictor(
+            votes_ro * valid_votes_perc, votes_foreign * valid_votes_perc
+        )
 
+        # Prepare JSON response
         response = {
             "message": "Prediction completed successfully",
             "votes_romania": votes_ro,
             "votes_foreign": votes_foreign,
             "valid_votes_percentage": valid_votes_perc,
-            "results": results,
+            "results": overall_results,  # Overall percentages
+            "results_romania": results_romania,  # Raw votes in Romania
+            "results_diaspora": results_diaspora,  # Raw votes in Diaspora
             "image_url": "/results.png"
         }
 
         return jsonify(response), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
 
 @app.route('/results.png', methods=['GET'])
 def get_results_image():

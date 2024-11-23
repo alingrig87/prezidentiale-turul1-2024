@@ -276,27 +276,29 @@ def check_matrix(conv_matrix):
         print ("Warning: Party conversion for {0} not between 0.9 and 1, calculated as {1}. Results will be incorrect!".
             format(party, total))
 
-def calculate_results(votes_romania, votes_foreign):
-    results_raw = dict.fromkeys(CANDIDATES,0)
-    results_perc = dict.fromkeys(CANDIDATES,0)
+def calculate_results_separately(votes_romania, votes_foreign):
+    results_romania = dict.fromkeys(CANDIDATES, 0)
+    results_diaspora = dict.fromkeys(CANDIDATES, 0)
     euro_results_ro = dict.fromkeys(PARTIES)
     euro_results_foreign = dict.fromkeys(PARTIES)
+
+    # Calculate Europarliamentary results for Romania and diaspora
     for party in PARTIES:
         euro_results_ro[party] = int(RESULTS_EUROPARL["Romania"][party] / 100 * votes_romania)
         euro_results_foreign[party] = int(RESULTS_EUROPARL["Foreign"][party] / 100 * votes_foreign)
 
+    # Map Euro results to candidates
     for candidate in CANDIDATES:
-        # ciolacu/ciuca/lasconi/simion
-        # calculate romania numbers first
         for party in PARTIES:
-            results_raw[candidate] += int(euro_results_ro[party] * CONV_MATRIX[party][candidate])
-            results_raw[candidate] += int(euro_results_foreign[party] * CONV_MATRIX[party][candidate])
+            results_romania[candidate] += int(euro_results_ro[party] * CONV_MATRIX[party][candidate])
+            results_diaspora[candidate] += int(euro_results_foreign[party] * CONV_MATRIX[party][candidate])
 
-    total_valid_votes = votes_romania + votes_foreign
-    for key in results_raw:
-        results_perc[key] = round((results_raw[key] * 100)/total_valid_votes, 2)
+    # Calculate total results
+    results_total = {candidate: results_romania[candidate] + results_diaspora[candidate] for candidate in CANDIDATES}
 
-    return results_raw, results_perc
+    return results_romania, results_diaspora, results_total
+
+
 # function to add value labels
 def addlabels(x,y):
     for i in range(len(x)):
@@ -304,35 +306,20 @@ def addlabels(x,y):
 
 def run_predictor(votes_romania, votes_foreign):
     check_matrix(CONV_MATRIX)
-    results_raw, results_perc = calculate_results(votes_romania, votes_foreign)
-    total_perc = 0
-    important_candidates = dict()
 
-    for candidate in CANDIDATES:
-        if results_perc[candidate] > 5:
-            total_perc += results_perc[candidate]
-            important_candidates[candidate] = results_perc[candidate]
+    # Get separate results for Romania, diaspora, and total
+    results_romania, results_diaspora, results_total = calculate_results_separately(votes_romania, votes_foreign)
 
-    important_candidates = dict(sorted(important_candidates.items(), reverse=True, key=lambda item: item[1]))
-    important_candidates["ALTII"] = round((100 - total_perc), 2)
+    # Calculate percentages for overall results
+    total_votes = votes_romania + votes_foreign
+    overall_results = {candidate: round(results_total[candidate] * 100 / total_votes, 2) for candidate in CANDIDATES}
 
-    # Save the bar chart as 'results.png'
-    names = list(important_candidates.keys())
-    values = list(important_candidates.values())
-    colorz = [CANDIDATES_COLORS.get(c, "tab:gray") for c in important_candidates]
+    # Sort all results for better readability
+    overall_results = dict(sorted(overall_results.items(), key=lambda item: item[1], reverse=True))
+    results_romania = dict(sorted(results_romania.items(), key=lambda item: item[1], reverse=True))
+    results_diaspora = dict(sorted(results_diaspora.items(), key=lambda item: item[1], reverse=True))
 
-    plt.bar(range(len(important_candidates)), values, tick_label=names, color=colorz)
-    addlabels(names, values)
-    plt.savefig('results.png')
-
-    data = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    plt.title("Rezultate la {0}, Voturi Romania: {1}, Voturi Diaspora: {2}, Total Votanti: {3}".format(
-        data, int(votes_romania), int(votes_foreign), int(votes_romania + votes_foreign)))
-    plt.close()
-
-    # Return the important_candidates dictionary
-    return important_candidates
-
+    return overall_results, results_romania, results_diaspora
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
