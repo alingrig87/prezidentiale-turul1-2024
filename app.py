@@ -1,10 +1,8 @@
-from flask import Flask, jsonify
-from flask_cors import CORS  # Importă Flask-CORS
-from script import get_ro_votes, get_foreign_votes, run_predictor
 import os
+from flask import Flask, jsonify
+from predict import get_ro_votes, get_foreign_votes, run_predictor
 
 app = Flask(__name__)
-CORS(app)  # Activează CORS pentru toate rutele
 
 @app.route('/api/predict', methods=['GET'])
 def predict():
@@ -30,4 +28,6 @@ def get_results_image():
     return app.send_static_file('results.png')
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    # Folosește variabila de mediu PORT, dacă este setată, sau portul implicit 5000
+    port = int(os.environ.get('PORT', 5000))
+    app.run(debug=False, host='0.0.0.0', port=port)
