@@ -25,7 +25,7 @@ def predict():
             "votes_romania": votes_ro,
             "votes_foreign": votes_foreign,
             "valid_votes_percentage": valid_votes_perc,
-            "results": results,
+            "results": results,  # Object returned from run_predictor
             "image_url": "/results.png"
         }
 

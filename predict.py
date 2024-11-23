@@ -307,6 +307,7 @@ def run_predictor(votes_romania, votes_foreign):
     results_raw, results_perc = calculate_results(votes_romania, votes_foreign)
     total_perc = 0
     important_candidates = dict()
+
     for candidate in CANDIDATES:
         if results_perc[candidate] > 5:
             total_perc += results_perc[candidate]
@@ -314,27 +315,24 @@ def run_predictor(votes_romania, votes_foreign):
 
     important_candidates = dict(sorted(important_candidates.items(), reverse=True, key=lambda item: item[1]))
     important_candidates["ALTII"] = round((100 - total_perc), 2)
-    results_raw["ALTII"] = round((100 - total_perc), 2) * (votes_romania+votes_foreign)
 
+    # Save the bar chart as 'results.png'
     names = list(important_candidates.keys())
     values = list(important_candidates.values())
-    colorz = []
-    for c in important_candidates:
-        colorz.append(CANDIDATES_COLORS[c])
+    colorz = [CANDIDATES_COLORS.get(c, "tab:gray") for c in important_candidates]
 
     plt.bar(range(len(important_candidates)), values, tick_label=names, color=colorz)
     addlabels(names, values)
     plt.savefig('results.png')
 
     data = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    plt.title("Rezultate la {0}, Voturi Romania: {1}, Voturi Diaspora: {2}, Total Votanti: {3}".format(
+        data, int(votes_romania), int(votes_foreign), int(votes_romania + votes_foreign)))
+    plt.close()
 
-    plt.title("Rezultate la {0}, Voturi Romania: {1}, Voturi Diaspora: {2}, Total Votanti: {3}".format(data,
-                                                                                                int(votes_romania),
-                                                                                                int(votes_foreign),
-                                                                                                int(votes_romania+
-                                                                                                votes_foreign)))
-    plt.show()
-    print (important_candidates)
+    # Return the important_candidates dictionary
+    return important_candidates
+
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
