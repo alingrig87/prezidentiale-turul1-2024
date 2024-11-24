@@ -80,35 +80,108 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Render the chart
     const renderChart = (chartData) => {
       const ctx = document.getElementById("chartCanvas").getContext("2d");
+
+      // Destroy the previous chart instance if it exists
       if (window.myChart) {
         window.myChart.destroy();
       }
 
+      // Map candidate names to their specific background and border colors
+      const candidateColors = {
+        "ELENA LASCONI": {
+          background: "rgba(0, 100, 255, 0.8)", // Blue
+          border: "rgba(255, 0, 0, 0.8)", // Red border
+        },
+        "CALIN GEORGESCU": {
+          background: "rgba(0, 0, 0, 0.4)", // White
+          border: "rgba(0, 0, 0, 1)", // Black border
+        },
+        "MARCEL CIOLACU": {
+          background: "rgba(255, 0, 0, 0.3)", // Red
+          border: "rgba(255, 0, 0, 1)", // Red border
+        },
+        "NICOLAE CIUCA": {
+          background: "rgba(255, 255, 0, 0.7)", // Yellow
+          border: "rgba(0, 0, 255, 0.8)", // Blue border
+        },
+        "GEORGE SIMION": {
+          background: "rgba(0, 0, 0, 0.8)", // Black
+          border: "rgba(255, 215, 0, 0.8)", // Gold border
+        },
+        "MIRCEA GEOANA": {
+          background: "rgba(135, 206, 250, 0.7)", // Light Blue
+          border: "rgba(135, 206, 250, 1)", // Light Blue  border
+        },
+        "ANA BIRCHALL": {
+          background: "rgba(255, 99, 132, 0.8)", // Pink
+          border: "rgba(255, 69, 0, 1)", // Orange Red border
+        },
+        "CRISTIAN DIACONESCU": {
+          background: "rgba(75, 192, 192, 0.8)", // Teal
+          border: "rgba(0, 128, 128, 1)", // Dark Teal border
+        },
+        "CRISTIAN TERHES": {
+          background: "rgba(153, 102, 255, 0.8)", // Purple
+          border: "rgba(128, 0, 128, 1)", // Dark Purple border
+        },
+        "KELEMEN HUNOR": {
+          background: "rgba(34, 139, 34, 0.8)", // Forest Green
+          border: "rgba(0, 100, 0, 1)", // Dark Green border
+        },
+        "LUDOVIC ORBAN": {
+          background: "rgba(255, 140, 0, 0.8)", // Dark Orange
+          border: "rgba(255, 69, 0, 1)", // Orange Red border
+        },
+        "ALEXANDRA PACURARU": {
+          background: "rgba(240, 128, 128, 0.8)", // Light Coral
+          border: "rgba(255, 99, 71, 1)", // Tomato border
+        },
+        "SEBASTIAN CONTANTIN POPESCU": {
+          background: "rgba(220, 20, 60, 0.8)", // Crimson
+          border: "rgba(139, 0, 0, 1)", // Dark Red border
+        },
+        "SILVIU PREDOIU": {
+          background: "rgba(47, 79, 79, 0.8)", // Dark Slate Gray
+          border: "rgba(0, 0, 0, 1)", // Black border
+        },
+      };
+
+      // Default colors for unspecified candidates
+      const defaultColors = {
+        background: "rgba(201, 203, 207, 0.6)", // Gray background
+        border: "rgba(201, 203, 207, 1)", // Gray border
+      };
+
+      // Assign background and border colors dynamically
+      const barColors = chartData.labels.map(
+        (label) =>
+          candidateColors[label]?.background || defaultColors.background
+      );
+      const borderColors = chartData.labels.map(
+        (label) => candidateColors[label]?.border || defaultColors.border
+      );
+
+      // Calculate bar and image size dynamically
+      const calculateBarThickness = () => {
+        const chartWidth = ctx.canvas.parentElement.offsetWidth; // Parent container's width
+        const barThickness = chartWidth / chartData.labels.length; // Dynamic bar size
+        return Math.min(barThickness, 50); // Cap the bar size at 50px max
+      };
+
+      const barThickness = calculateBarThickness();
+
+      // Create the Chart.js bar chart
       window.myChart = new Chart(ctx, {
         type: "bar",
         data: {
-          labels: chartData.labels,
+          labels: chartData.labels, // Candidate names
           datasets: [
             {
               label: "Vote Percentage",
-              data: chartData.percentages,
-              backgroundColor: [
-                "rgba(54, 162, 235, 0.6)",
-                "rgba(255, 99, 132, 0.6)",
-                "rgba(255, 206, 86, 0.6)",
-                "rgba(75, 192, 192, 0.6)",
-                "rgba(153, 102, 255, 0.6)",
-                "rgba(201, 203, 207, 0.6)",
-              ],
-              borderColor: [
-                "rgba(54, 162, 235, 1)",
-                "rgba(255, 99, 132, 1)",
-                "rgba(255, 206, 86, 1)",
-                "rgba(75, 192, 192, 1)",
-                "rgba(153, 102, 255, 1)",
-                "rgba(201, 203, 207, 1)",
-              ],
-              borderWidth: 1,
+              data: chartData.percentages, // Candidate percentages
+              backgroundColor: barColors, // Fill colors
+              borderColor: borderColors, // Border colors
+              borderWidth: 4, // Bar border width
             },
           ],
         },
@@ -116,15 +189,16 @@ document.addEventListener("DOMContentLoaded", async () => {
           responsive: true,
           plugins: {
             legend: {
-              display: false,
+              display: false, // Hide legend
             },
             afterDatasetsDraw: (chart) => {
               const ctx = chart.ctx;
-              ctx.font = "bold 16px Arial";
-              ctx.fillStyle = "black";
-              ctx.textAlign = "center";
-              ctx.textBaseline = "middle";
+              ctx.font = "bold 16px Arial"; // Font style for percentages
+              ctx.fillStyle = "black"; // Text color
+              ctx.textAlign = "center"; // Center-align text
+              ctx.textBaseline = "middle"; // Vertically align text in the middle
 
+              // Draw percentage on top of each bar
               chart.data.datasets[0].data.forEach((value, index) => {
                 const meta = chart.getDatasetMeta(0);
                 const bar = meta.data[index];
@@ -136,16 +210,15 @@ document.addEventListener("DOMContentLoaded", async () => {
           },
           scales: {
             y: {
-              beginAtZero: true,
+              beginAtZero: true, // Start y-axis at 0
               title: {
-                display: true,
-                text: "Percentage (%)",
+                display: true, // Show y-axis title
+                text: "Percentage (%)", // Title text
               },
             },
           },
         },
       });
-
       renderCandidatePhotos(
         chartData.labels,
         chartData.images,
@@ -157,6 +230,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const renderCandidatePhotos = (labels, images, percentages) => {
       const photoContainer = document.getElementById("candidatePhotos");
       photoContainer.innerHTML = ""; // Clear previous content
+
       labels.forEach((label, index) => {
         const photoDiv = document.createElement("div");
         photoDiv.classList.add("candidate");
@@ -165,15 +239,29 @@ document.addEventListener("DOMContentLoaded", async () => {
         img.src = images[index];
         img.alt = label;
 
-        const name = document.createElement("p");
-        name.textContent = label;
+        const nameContainer = document.createElement("div");
+        nameContainer.style.display = "flex";
+        nameContainer.style.flexDirection = "column";
+        nameContainer.style.alignItems = "center";
+
+        const [firstName, lastName] = label.split(" "); // Split name into first and last
+        const firstNameEl = document.createElement("p");
+        firstNameEl.textContent = firstName;
+        firstNameEl.style.margin = "0";
+
+        const lastNameEl = document.createElement("p");
+        lastNameEl.textContent = lastName;
+        lastNameEl.style.margin = "0";
+
+        nameContainer.appendChild(firstNameEl);
+        nameContainer.appendChild(lastNameEl);
 
         const percentage = document.createElement("p");
         percentage.textContent = `${percentages[index]}%`;
         percentage.style.fontWeight = "bold";
 
         photoDiv.appendChild(img);
-        photoDiv.appendChild(name);
+        photoDiv.appendChild(nameContainer);
         photoDiv.appendChild(percentage);
         photoContainer.appendChild(photoDiv);
       });

@@ -11,16 +11,30 @@
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        gap: 20px;
+        gap: 35px;
         margin-top: 20px;
+        margin-left: 25px;
       }
+
       .candidate {
         text-align: center;
+        font-family: Arial, sans-serif;
       }
+
       .candidate img {
         width: 100px;
         height: 100px;
         border-radius: 50%;
+        margin-bottom: 10px;
+      }
+
+      .candidate p {
+        margin: 5px 0;
+      }
+
+      .candidate div p {
+        line-height: 1.2;
+        font-size: 14px; /* Adjust size if needed */
       }
 
       .badges {
@@ -49,7 +63,7 @@
       <button class="badge" data-type="romania">Romania</button>
       <button class="badge" data-type="diaspora">Diaspora</button>
     </div>
-    <canvas id="chartCanvas" width="800" height="400"></canvas>
+    <canvas id="chartCanvas" width="600" height="200"></canvas>
     <div id="candidatePhotos" class="candidate-container"></div>
 
     <script src="/static/index.js"></script>
