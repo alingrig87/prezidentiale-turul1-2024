@@ -68,10 +68,10 @@ RESULTS_EUROPARL = \
 
 CONV_MATRIX = { # party to candidate conversion
     "PSD+PNL": { # How much of the vote will be converted by the candidate.
-        "ELENA LASCONI": 0.04, # conversie ciuca
+        "ELENA LASCONI": 0.08, # conversie ciuca
         "GEORGE SIMION": 0.02,
         "MARCEL CIOLACU": 0.50,
-        "NICOLAE CIUCA": 0.25,
+        "NICOLAE CIUCA": 0.21,
         "KELEMEN HUNOR": 0,
         "MIRCEA GEOANA": 0.10,
         "ANA BIRCHALL": 0,
@@ -84,18 +84,18 @@ CONV_MATRIX = { # party to candidate conversion
         "SILVIU PREDOIU": 0
     },
     "USR+PMP+FD": { # How much of the vote will be converted by the candidate.
-        "ELENA LASCONI": 0.85,
-        "GEORGE SIMION": 0.02,
-        "MARCEL CIOLACU": 0.02,
+        "ELENA LASCONI": 0.95,
+        "GEORGE SIMION": 0.01,
+        "MARCEL CIOLACU": 0.01,
         "NICOLAE CIUCA": 0.01,
         "KELEMEN HUNOR": 0,
         "MIRCEA GEOANA": 0.01,
         "ANA BIRCHALL": 0.0,
         "ALEXANDRA PACURARU": 0,
         "SEBASTIAN CONTANTIN POPESCU": 0,
-        "LUDOVIC ORBAN": 0.01,
+        "LUDOVIC ORBAN": 0,
         "CALIN GEORGESCU": 0.01,
-        "CRISTIAN DIACONESCU": 0.02,
+        "CRISTIAN DIACONESCU": 0,
         "CRISTIAN TERHES": 0,
         "SILVIU PREDOIU": 0
     },
